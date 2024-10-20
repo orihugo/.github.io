@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Maker Realty 教育应用</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-weight: bold;
+            color: #ff0000;
+        }
+        .nav-icons span {
+            margin-left: 15px;
+        }
+        .main-content {
+            padding: 20px;
+            margin-bottom: 60px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .video-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background-size: cover;
+            background-position: center;
+        }
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        .video-info {
+            padding: 10px;
+        }
+        .video-title {
+            font-size: 14px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .video-duration {
+            font-size: 12px;
+            margin: 5px 0 0;
+            color: #666;
+        }
+        .video-description {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #333;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: white;
+            padding: 10px 0;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        .nav-item.active {
+            color: #ff0000;
+        }
+        .more-btn {
+            color: #ff0000;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .video-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .video-list li {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .video-list img {
+            width: 120px;
+            margin-right: 10px;
+        }
+        .video-list .video-info {
+            flex: 1;
+        }
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab-nav button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .tab-nav button.active {
+            border-bottom: 2px solid #ff0000;
+            font-weight: bold;
+        }
+        .event-list {
+            padding: 0 20px;
+        }
+        .event-card {
+            display: flex;
+            background-color: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        .event-date {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            padding: 10px;
+            min-width: 60px;
+        }
+        .event-date .month {
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .event-date .day {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .event-details {
+            flex-grow: 1;
+            padding: 15px;
+        }
+        .event-time {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .event-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .event-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+        .event-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .event-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .register-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="logo">One Maker Realty</div>
+        <div class="nav-icons">
+            <span>🔔</span>
+            <span>👤</span>
+        </div>
+    </nav>
+    <div id="mainContent" class="main-content">
+        <!-- 主要内容将通过JavaScript动态添加 -->
+    </div>
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showContent('academic')">
+            <i class="fas fa-book"></i>
+            <div>Academic</div>
+        </div>
+        <div class="nav-item" onclick="showContent('calendar')">
+            <i class="far fa-calendar-alt"></i>
+            <div>Calendar</div>
+        </div>
+        <div class="nav-item" onclick="showContent('property')">
+            <i class="fas fa-home"></i>
+            <div>Property</div>
+        </div>
+        <div class="nav-item" onclick="showContent('service')">
+            <i class="fas fa-concierge-bell"></i>
+            <div>Service</div>
+        </div>
+        <div class="nav-item" onclick="showContent('profile')">
+            <i class="fas fa-user"></i>
+            <div>Profile</div>
+        </div>
+    </nav>
+    <div id="eventModal" class="event-modal">
+        <div class="event-modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modalEventTitle"></h2>
+            <div id="modalEventContent"></div>
+            <button class="register-btn" onclick="registerEvent()">注册参加</button>
+        </div>
+    </div>
+    <script>
+        const videoLists = {
+            businessOnboarding: [
+                { id: 'dQw4w9WgXcQ', title: '新员工入职培训', duration: '15:30', description: '了解One Maker Realty的企业文化和工作流程' },
+                { id: 'ZZ5LpwO-An4', title: '客户服务基础', duration: '12:45', description: '学习如何提供卓越的客户服务' },
+                { id: '9bZkp7q19f0', title: '房地产市场概览', duration: '20:15', description: '了解当前房地产市场趋势和预测' },
+                { id: 'JGwWNGJdvx8', title: '销售技巧进阶', duration: '18:00', description: '提升您的房地产销售能力' }
+            ],
+            reFundamental: [
+                { id: 'kJQP7kiw5Fk', title: '房地产法律基础', duration: '22:10', description: '了解房地产交易中的关键法律问题' },
+                { id: 'OPf0YbXqDm0', title: '房产估值方法', duration: '16:40', description: '学习如何准确评估房产价值' },
+                { id: 'JRfuAukYTKg', title: '房地产投资策略', duration: '25:30', description: '探索成功的房地产投资方法' },
+                { id: 'YQHsXMglC9A', title: '房地产营销技巧', duration: '19:20', description: '学习有效的房地产营销策略' }
+            ]
+        };
+
+        const upcomingEvents = [
+            { 
+                date: '2024-10-15', 
+                time: '10:30 AM - 12:30 PM', 
+                title: '月度代理会议 + 视频/短视频培训',
+                content: `
+                    <h3>月度代理会议 + 视频/短视频培训</h3>
+                    <p>地点：One Maker Realty总部会议室</p>
+
+                    <h4>会议议程：</h4>
+                    <ul>
+                        <li>上月业绩回顾</li>
+                        <li>本月销售目标设定</li>
+                        <li>新房源介绍</li>
+                        <li>视频营销策略分享</li>
+                        <li>短视频制作实践工作坊</li>
+                    </ul>
+
+                    <p>请携带智能手机参加，我们将进行实际的视频拍摄和编辑练习。</p>`
+            },
+            { 
+                date: '2024-10-20', 
+                time: '09:00 AM - 05:00 PM', 
+                title: '新人培训：房地产基础知识',
+                content: `
+                    <h3>新人培训：房地产基础知识</h3>
+                    <p>地点：One Maker Realty培训中心</p>
+
+                    <h4>培训内容：</h4>
+                    <ul>
+                        <li>房地产市场概况</li>
+                        <li>房产类型及特点</li>
+                        <li>房地产交易流程</li>
+                        <li>基本法律知识</li>
+                        <li>客户沟通技巧</li>
+                        <li>One Maker Realty系统使用</li>
+                    </ul>
+
+                    <p>本次培训为全天课程，包含午餐。请新入职的同事务必参加。</p>`
+            },
+            { 
+                date: '2024-10-25', 
+                time: '02:00 PM - 04:00 PM', 
+                title: '高端物业销售策略研讨会',
+                content: `
+                    <h3>高端物业销售策略研讨会</h3>
+                    <p>地点：线上会议（Zoom）</p>
+
+                    <h4>研讨主题：</h4>
+                    <ul>
+                        <li>高净值客户需求分析</li>
+                        <li>豪宅市场趋势</li>
+                        <li>高端物业定价策略</li>
+                        <li>个性化服务技巧</li>
+                        <li>案例分享与讨论</li>
+                    </ul>
+
+                    <p>本次研讨会邀请了多位业内专家和成功的高端物业销售精英分享经验。</p>`
+            }
+        ];
+
+        const pastEvents = [
+            { 
+                date: '2024-09-30', 
+                time: '10:00 AM - 12:00 PM', 
+                title: '二手房市场分析会议',
+                content: `
+                    <h3>二手房市场分析会议</h3>
+                    <p>地点：One Maker Realty会议室A</p>
+
+                    <h4>会议内容：</h4>
+                    <ul>
+                        <li>当前二手房市场概况</li>
+                        <li>价格趋势分析</li>
+                        <li>热门区域和物业类型</li>
+                        <li>二手房交易注意事项</li>
+                        <li>成功案例分享</li>
+                    </ul>
+
+                    <p>会议记录和相关资料已上传到公司内网，请及时查阅。</p>`
+            },
+            { 
+                date: '2024-09-28', 
+                time: '10:00 AM - 01:00 PM', 
+                title: '百万房产经纪人计划',
+                content: `
+                    <h3>百万房产经纪人计划</h3>
+                    <p>地点：One Maker Realty培训中心</p>
+
+                    <h4>课程内容：</h4>
+                    <ul>
+                        <li>高端市场分析</li>
+                        <li>豪宅特性与卖点</li>
+                        <li>高净值客户服务技巧</li>
+                        <li>奢侈品房产定价策略</li>
+                        <li>国际买家开发</li>
+                    </ul>
+
+                    <p>本次培训由多位年销售额过亿的顶级经纪人主讲。参与者获得了独家市场洞察和网络机会。</p>`
+            },
+            { 
+                date: '2024-09-24', 
+                time: '10:30 AM - 12:30 PM', 
+                title: '电话沟通技巧大师班',
+                content: `
+                    <h3>电话沟通技巧大师班</h3>
+                    <p>地点：线上培训（Zoom）</p>
+
+                    <h4>培训内容：</h4>
+                    <ul>
+                        <li>有效开场白技巧</li>
+                        <li>积极倾听的重要性</li>
+                        <li>处理异议的方法</li>
+                        <li>电话销售话术</li>
+                        <li>跟进技巧</li>
+                        <li>电话礼仪</li>
+                    </ul>
+
+                    <p>培训录像已上传至公司学习平台，请未能参加的同事及时观看学习。</p>`
+            }
+        ];
+
+        const eventImages = [
+            'https://picsum.photos/80/80?random=1',
+            'https://picsum.photos/80/80?random=2',
+            'https://picsum.photos/80/80?random=3',
+            'https://picsum.photos/80/80?random=4',
+            'https://picsum.photos/80/80?random=5'
+        ];
+
+        function showContent(section) {
+            const mainContent = document.getElementById('mainContent');
+            
+            // 更新底部导航栏的活动状态
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`.nav-item:nth-child(${['academic', 'calendar', 'property', 'service', 'profile'].indexOf(section) + 1})`).classList.add('active');
+
+            if (section === 'academic') {
+                mainContent.innerHTML = `
+                    <div class="section-header">
+                        <h2>ACADEMIC</h2>
+                    </div>
+                    <section id="businessOnboarding">
+                        <div class="section-header">
+                            <h3>Business Onboarding</h3>
+                            <button class="more-btn" onclick="showVideoList('businessOnboarding')">More</button>
+                        </div>
+                        <div class="video-grid">
+                            ${generateVideoCards(videoLists.businessOnboarding.slice(0, 2))}
+                        </div>
+                    </section>
+                    <section id="reFundamental">
+                        <div class="section-header">
+                            <h3>R.E. Fundamental</h3>
+                            <button class="more-btn" onclick="showVideoList('reFundamental')">More</button>
+                        </div>
+                        <div class="video-grid">
+                            ${generateVideoCards(videoLists.reFundamental.slice(0, 2))}
+                        </div>
+                    </section>
+                `;
+            } else if (section === 'calendar') {
+                mainContent.innerHTML = `
+                    <h2 class="main-title">日历</h2>
+                    <div class="tab-nav">
+                        <button class="active" onclick="showEvents('upcoming')">UP-COMING EVENT</button>
+                        <button onclick="showEvents('past')">PAST EVENT</button>
+                    </div>
+                    <div id="eventList" class="event-list">
+                        <!-- 事件卡片将通过JavaScript动态添加 -->
+                    </div>
+                `;
+                showEvents('upcoming');
+            } else if (section === 'property') {
+                mainContent.innerHTML = `<h2>Property 页面正在开发中</h2>`;
+            } else if (section === 'service') {
+                mainContent.innerHTML = `<h2>Service 页面正在开发中</h2>`;
+            } else if (section === 'profile') {
+                mainContent.innerHTML = `<h2>Profile 页面正在开发中</h2>`;
+            }
+        }
+
+        function generateVideoCards(videos) {
+            return videos.map(video => `
+                <div class="video-card">
+                    <div class="video-thumbnail" style="background-image: url('https://img.youtube.com/vi/${video.id}/0.jpg');">
+                        <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank" class="play-button">▶</a>
+                    </div>
+                    <div class="video-info">
+                        <h4 class="video-title">${video.title}</h4>
+                        <p class="video-duration">${video.duration}</p>
+                        <p class="video-description">${video.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showVideoList(category) {
+            const mainContent = document.getElementById('mainContent');
+            const videos = videoLists[category];
+            let html = `
+                <div class="section-header">
+                    <button class="back-btn" onclick="showContent('academic')">返回</button>
+                    <h2>${getCategoryTitle(category)}</h2>
+                </div>
+                <ul class="video-list">
+            `;
+            videos.forEach(video => {
+                html += `
+                    <li>
+                        <img src="https://img.youtube.com/vi/${video.id}/0.jpg" alt="${video.title}">
+                        <div class="video-info">
+                            <h4>${video.title}</h4>
+                            <p>${video.duration}</p>
+                            <p>${video.description}</p>
+                            <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank">观看视频</a>
+                        </div>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            mainContent.innerHTML = html;
+        }
+
+        function getCategoryTitle(category) {
+            const titles = {
+                businessOnboarding: 'Business Onboarding',
+                reFundamental: 'R.E. Fundamental'
+            };
+            return titles[category];
+        }
+
+        function showEvents(type) {
+            const eventList = document.getElementById('eventList');
+            const events = type === 'upcoming' ? upcomingEvents : pastEvents;
+            eventList.innerHTML = '';
+
+            events.forEach((event, index) => {
+                const date = new Date(event.date);
+                const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+                const eventCard = `
+                    <div class="event-card" onclick="showEventDetails(${index}, '${type}')">
+                        <div class="event-date">
+                            <span class="month">${monthNames[date.getMonth()]}</span>
+                            <span class="day">${date.getDate()}</span>
+                        </div>
+                        <img src="${eventImages[index % eventImages.length]}" alt="Event Image" class="event-image">
+                        <div class="event-details">
+                            <div class="event-time">${event.time}</div>
+                            <div class="event-title">${event.title}</div>
+                        </div>
+                    </div>
+                `;
+                eventList.innerHTML += eventCard;
+            });
+
+            // 更新活动标签
+            document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.tab-nav button:nth-child(${type === 'upcoming' ? 1 : 2})`).classList.add('active');
+        }
+
+        function showEventDetails(index, type) {
+            const events = type === 'upcoming' ? upcomingEvents : pastEvents;
+            const event = events[index];
+            const modal = document.getElementById('eventModal');
+            const modalTitle = document.getElementById('modalEventTitle');
+            const modalContent = document.getElementById('modalEventContent');
+
+            modalTitle.textContent = event.title;
+            modalContent.innerHTML = `
+                <p><strong>日期：</strong>${event.date}</p>
+                <p><strong>时间：</strong>${event.time}</p>
+                ${event.content}
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        function registerEvent() {
+            alert('您已成功注册此活动！');
+            document.getElementById('eventModal').style.display = 'none';
+        }
+
+        // 关闭模态窗口
+        document.querySelector('.close-modal').onclick = function() {
+            document.getElementById('eventModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('eventModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // 初始显示Academic内容
+        showContent('academic');
+    </script>
+</body>
+</html>
